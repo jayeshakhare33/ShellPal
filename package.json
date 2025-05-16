@@ -1,0 +1,27 @@
+{
+  "name": "shellpal",
+  "version": "1.0.0",
+  "description": "A cross-platform terminal emulator built with Electron and xterm.js",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "@xterm/addon-fit": "^0.9.0",
+    "@xterm/xterm": "^5.5.0"
+  },
+  "devDependencies": {
+    "electron": "^29.0.0"
+  },
+  "keywords": [
+    "electron",
+    "terminal",
+    "xterm",
+    "shell",
+    "cross-platform",
+    "ShellPal"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
