@@ -1,10 +1,9 @@
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
-import { spawn } from 'child_process';
 
 const terminalContainer = document.getElementById('terminal-container');
 
-// Initialize terminal
+// Initialize xterm.js
 const term = new Terminal({
   cursorBlink: true,
   fontSize: 14,
@@ -13,37 +12,25 @@ const term = new Terminal({
     foreground: '#ffffff',
   },
 });
-
 const fitAddon = new FitAddon();
 term.loadAddon(fitAddon);
 term.open(terminalContainer);
-fitAddon.fit(); // Adjust terminal to container size
+fitAddon.fit();
 
-// Detect platform and shell
-const isWindows = process.platform === 'win32';
-const shell = isWindows ? 'powershell.exe' : process.env.SHELL || 'bash';
-
-// Spawn shell process
-const shellProcess = spawn(shell, [], {
-  stdio: 'pipe',
-  shell: false,
-});
-
-// Pipe shell output to terminal
-shellProcess.stdout.on('data', (data) => {
-  term.write(data.toString());
-});
-
-shellProcess.stderr.on('data', (data) => {
-  term.write(data.toString());
-});
-
-// Pipe terminal input to shell
+// Send user input to main process
 term.onData((data) => {
-  shellProcess.stdin.write(data);
+  window.api.sendInput(data);
 });
 
-// Handle shell exit
-shellProcess.on('exit', (code) => {
-  term.write(`\r\n\nShell exited with code ${code}`);
+// Receive shell output from main process
+window.api.onOutput((data) => {
+  term.write(data);
+});
+
+window.api.onError((data) => {
+  term.write(`\x1b[31m${data}\x1b[0m`); // Red text for errors
+});
+
+window.api.onExit((code) => {
+  term.write(`\r\n\n\x1b[33mShell exited with code ${code}\x1b[0m`);
 });
